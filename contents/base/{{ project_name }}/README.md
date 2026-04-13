@@ -31,6 +31,19 @@ Generates static content into the `build/` directory.
 ```bash
 npm run typecheck
 ```
+
+## Using pnpm?
+
+Docusaurus is package-manager-agnostic. Substitute `pnpm` for `npm`:
+
+```bash
+pnpm install
+pnpm start
+pnpm build
+pnpm typecheck
+```
+
+(If you use pnpm, commit `pnpm-lock.yaml` and delete `package-lock.json`.)
 {% if deploy_target == "GitHub Pages" then %}
 
 ## Deploy
