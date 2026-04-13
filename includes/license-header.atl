@@ -1,0 +1,4 @@
+{% if license ~= "None" then %}
+Copyright © {{ author_full }}
+License: {{ license }}
+{% end %}
