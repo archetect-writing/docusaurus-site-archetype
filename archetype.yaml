@@ -1,6 +1,10 @@
 ---
 description: "Docusaurus documentation site"
+summary: "Scaffolds a modern Docusaurus 3 documentation site in TypeScript. Prompts for site identity, a content preset (minimal / standard / archetect-style), a deploy target (GitHub Pages / Vercel / Netlify / None), and optional extras (Mermaid, local search, dark-mode default, versioned docs, blog). Initializes git and optionally creates + pushes a GitHub repo."
 authors: ["Jimmie Fulton <jimmie.fulton@gmail.com>"]
+languages: ["TypeScript", "Markdown"]
+frameworks: ["Docusaurus"]
+tags: ["site-generator", "documentation", "docusaurus"]
 
 requires:
   archetect: "3.0.0"
