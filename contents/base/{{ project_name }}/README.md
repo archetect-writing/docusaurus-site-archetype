@@ -48,8 +48,12 @@ pnpm typecheck
 
 ## Deploy
 
+{% if is_root_domain then %}
+Configured for GitHub Pages at `https://{{ project_name }}/` (root domain).
+{% else %}
 Configured for GitHub Pages at
 `https://{{ organization }}.github.io/{{ project_name }}/`.
+{% end %}
 Push to `main` — the Actions workflow builds and publishes automatically.
 {% elseif deploy_target == "Vercel" then %}
 

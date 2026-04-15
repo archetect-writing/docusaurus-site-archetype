@@ -28,12 +28,20 @@ context:prompt_text("Site Tagline:", "site_tagline", {
 
 context:prompt_text("Project Name:", "project_name", {
     placeholder = "my-docs",
-    help = "Used as the repo/folder name. kebab-case. Will also be the GitHub Pages baseUrl.",
+    help = "Used as the repo/folder name. kebab-case, or a GitHub user/org site like `your-org.github.io` (dots preserved).",
     cases = { Cases.input("project_name_input") },
 })
 
--- Ensure kebab-case for project_name regardless of input casing
-context:set("project_name", Case.Kebab:apply(context:get("project_name")))
+-- Preserve input as-is if it already looks like a URL-safe slug
+-- (lowercase letters, digits, hyphens, dots). Otherwise force kebab-case.
+-- This keeps GitHub user/org site names like `archetect.github.io` intact.
+do
+    local pn = context:get("project_name")
+    if not pn:match("^[a-z0-9][-a-z0-9.]*$") then
+        pn = Case.Kebab:apply(pn)
+    end
+    context:set("project_name", pn)
+end
 
 -- ─── Deployment target ───────────────────────────────────────────────
 context:prompt_select("Deploy Target:", "deploy_target",
@@ -104,6 +112,14 @@ end
 
 local project_name = context:get("project_name")
 context:set("github_slug", uses_github and (context:get("organization") .. "/" .. project_name) or "")
+
+-- Detect a root-domain GitHub Pages site: repo named `<owner>.github.io`
+-- deploys to https://<owner>.github.io at baseUrl=/, not to a subpath.
+local is_root_domain = uses_github
+    and context:get("deploy_target") == "GitHub Pages"
+    and (project_name == context:get("organization") .. ".github.io"
+         or project_name:match("%.github%.io$") ~= nil)
+context:set("is_root_domain", is_root_domain)
 
 -- ─── Render ──────────────────────────────────────────────────────────
 -- Always render the base.

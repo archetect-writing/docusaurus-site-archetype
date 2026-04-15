@@ -12,8 +12,13 @@ const config: Config = {
   },
 
 {% if deploy_target == "GitHub Pages" then %}
+{% if is_root_domain then %}
+  url: 'https://{{ project_name }}',
+  baseUrl: '/',
+{% else %}
   url: 'https://{{ organization }}.github.io',
   baseUrl: '/{{ project_name }}/',
+{% end %}
 {% elseif deploy_target == "Vercel" then %}
   url: 'https://{{ project_name }}.vercel.app',
   baseUrl: '/',
