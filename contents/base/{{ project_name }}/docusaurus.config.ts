@@ -34,18 +34,20 @@ const config: Config = {
   projectName: '{{ project_name }}',
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+
+  markdown: {
+{% if extras_mermaid then %}
+    mermaid: true,
+{% end %}
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
 
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
   },
-
-{% if extras_mermaid then %}
-  markdown: {
-    mermaid: true,
-  },
-{% end %}
 
 {% if extras_mermaid or extras_search then %}
   themes: [

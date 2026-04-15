@@ -4,7 +4,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
-{% if content_preset ~= "minimal" then %}
+{% if content_preset == "standard" then %}
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 {% end %}
 
@@ -39,7 +39,7 @@ export default function Home(): ReactNode {
       description={siteConfig.tagline}>
       <HomepageHeader />
       <main>
-{% if content_preset ~= "minimal" then %}
+{% if content_preset == "standard" then %}
         <HomepageFeatures />
 {% end %}
       </main>
