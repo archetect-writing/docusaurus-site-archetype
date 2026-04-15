@@ -115,11 +115,20 @@ context:set("github_slug", uses_github and (context:get("organization") .. "/" .
 
 -- Detect a root-domain GitHub Pages site: repo named `<owner>.github.io`
 -- deploys to https://<owner>.github.io at baseUrl=/, not to a subpath.
-local is_root_domain = uses_github
-    and context:get("deploy_target") == "GitHub Pages"
-    and (project_name == context:get("organization") .. ".github.io"
-         or project_name:match("%.github%.io$") ~= nil)
+-- Doesn't require SCM=GitHub — users may scaffold without GitHub wiring
+-- but still target an existing GH Pages repo.
+local is_root_domain = context:get("deploy_target") == "GitHub Pages"
+    and project_name:match("%.github%.io$") ~= nil
 context:set("is_root_domain", is_root_domain)
+
+-- For root-domain sites, derive organizationName from project_name
+-- (it's the prefix before `.github.io`). Overrides the stub when SCM=None.
+if is_root_domain then
+    local derived_org = project_name:match("^(.+)%.github%.io$")
+    if derived_org and derived_org ~= "" then
+        context:set("organization", derived_org)
+    end
+end
 
 -- ─── Render ──────────────────────────────────────────────────────────
 -- Always render the base.

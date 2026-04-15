@@ -3,8 +3,8 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: '{{ site_title }}',
-  tagline: '{{ site_tagline }}',
+  title: `{{ site_title }}`,
+  tagline: `{{ site_tagline }}`,
   favicon: 'img/favicon.ico',
 
   future: {
@@ -111,9 +111,9 @@ const config: Config = {
 {% end %}
     },
     navbar: {
-      title: '{{ site_title }}',
+      title: `{{ site_title }}`,
       logo: {
-        alt: '{{ site_title }} Logo',
+        alt: `{{ site_title }} Logo`,
         src: 'img/logo.svg',
       },
       items: [
