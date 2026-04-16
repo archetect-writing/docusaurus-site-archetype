@@ -60,7 +60,7 @@ context:prompt_select("Content Preset:", "content_preset",
     })
 
 -- ─── Extras ──────────────────────────────────────────────────────────
-context:prompt_multi_select("Extras:", "extras",
+context:prompt_multiselect("Extras:", "extras",
     { "Mermaid", "Local Search", "Dark Mode Default", "Versioned Docs", "Blog" },
     {
         default = { "Mermaid", "Local Search" },
