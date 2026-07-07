@@ -84,9 +84,10 @@ Selectable independently:
   [`archetect-actions/repository-release`](https://github.com/archetect-actions/repository-release).
   Prints the exact `gh repo create` + `git push` commands.
 - **GitHub (Publish)** — same as Instructions, plus calls
-  `github.create_repo` and pushes `main` automatically. Requires
-  `GITHUB_TOKEN`. Falls back to Instructions mode if the token is
-  missing.
+  `github.create_repo` and pushes `main` automatically. Authenticates
+  via `GITHUB_TOKEN` or a logged-in `gh` CLI. If creation fails (or the
+  repo already exists with content), prints the manual publish
+  instructions instead.
 
 ## Layout
 

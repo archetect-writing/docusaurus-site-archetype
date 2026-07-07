@@ -43,7 +43,9 @@ pnpm build
 pnpm typecheck
 ```
 
-(If you use pnpm, commit `pnpm-lock.yaml` and delete `package-lock.json`.)
+(If you use pnpm, commit `pnpm-lock.yaml` and delete `package-lock.json`.
+The included `pnpm-workspace.yaml` pre-approves the install scripts
+Docusaurus needs — pnpm 10+ blocks dependency build scripts by default.)
 {% if deploy_target == "GitHub Pages" then %}
 
 ## Deploy

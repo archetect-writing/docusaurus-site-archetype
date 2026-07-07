@@ -10,5 +10,6 @@ requires:
   archetect: "3.0.0"
 
 templating:
+  undefined: strict
   trim_blocks: true
   lstrip_blocks: true

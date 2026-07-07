@@ -68,16 +68,11 @@ context:prompt_multiselect("Extras:", "extras",
     })
 
 -- Derive per-extra booleans for template use
-local extras = context:get("extras") or {}
-local function has(list, name)
-    for _, v in ipairs(list) do if v == name then return true end end
-    return false
-end
-context:set("extras_mermaid", has(extras, "Mermaid"))
-context:set("extras_search", has(extras, "Local Search"))
-context:set("extras_dark_default", has(extras, "Dark Mode Default"))
-context:set("extras_versioned_docs", has(extras, "Versioned Docs"))
-context:set("extras_blog", has(extras, "Blog"))
+context:set("extras_mermaid", context:contains("extras", "Mermaid"))
+context:set("extras_search", context:contains("extras", "Local Search"))
+context:set("extras_dark_default", context:contains("extras", "Dark Mode Default"))
+context:set("extras_versioned_docs", context:contains("extras", "Versioned Docs"))
+context:set("extras_blog", context:contains("extras", "Blog"))
 
 -- ─── Source control ──────────────────────────────────────────────────
 context:prompt_select("Source Control:", "scm_provider",
@@ -98,16 +93,6 @@ if uses_github then
     })
 else
     context:set("organization", "your-org")
-end
-
--- GITHUB_TOKEN pre-check
-if scm == "GitHub (Publish)" then
-    local token = os.getenv("GITHUB_TOKEN")
-    if not token or token == "" then
-        log.warn("GITHUB_TOKEN is not set. Falling back to GitHub (Instructions) mode.")
-        scm = "GitHub (Instructions)"
-        context:set("scm_provider", scm)
-    end
 end
 
 local project_name = context:get("project_name")
@@ -172,31 +157,46 @@ repo:add_all()
 repo:commit("initial commit")
 
 -- ─── Publish or instructions ─────────────────────────────────────────
+local function print_github_instructions(slug)
+    output.print("")
+    output.print("Next steps:")
+    output.print("  cd " .. project_name)
+    output.print("  npm install")
+    output.print("  npm start")
+    output.print("")
+    output.print("To publish to GitHub:")
+    output.print("  gh repo create " .. slug .. " --public --source=. --remote=origin")
+    output.print("  git push -u origin main")
+    output.print("")
+end
+
 if scm == "GitHub (Publish)" then
     local github = require("archetect.github")
     local slug = context:get("github_slug")
-    if github.create_repo(slug, { visibility = "public" }) then
+    -- create_repo raises on failure (no token, API error) and returns
+    -- { created, empty } otherwise. `created = false, empty = true`
+    -- means the repo already existed but is safe to push to.
+    local ok, result = pcall(github.create_repo, slug, { visibility = "public" })
+    if ok and (result.created or result.empty) then
         repo:remote_add("origin", "git@github.com:" .. slug .. ".git")
         repo:push("origin", "main")
-        log.info("Published to https://github.com/" .. slug)
+        output.print("Published to https://github.com/" .. slug)
     else
-        log.warn("Repository creation failed — push manually once resolved.")
+        if not ok then
+            local message = tostring(result):gsub("\nstack traceback:.*", "")
+            log.warn("Repository creation failed: " .. message)
+        else
+            log.warn("Repository " .. slug .. " already exists and has content — not pushing.")
+        end
+        print_github_instructions(slug)
     end
 elseif scm == "GitHub (Instructions)" then
-    local slug = context:get("github_slug")
-    log.info("")
-    log.info("Next steps:")
-    log.info("  cd " .. project_name)
-    log.info("  npm install")
-    log.info("  npm start")
-    log.info("")
-    log.info("To publish to GitHub:")
-    log.info("  gh repo create " .. slug .. " --public --source=. --remote=origin")
-    log.info("  git push -u origin main")
-    log.info("")
+    print_github_instructions(context:get("github_slug"))
 else
-    log.info("")
-    log.info("Local site created at ./" .. project_name)
-    log.info("Run: cd " .. project_name .. " && npm install && npm start")
-    log.info("")
+    output.print("")
+    output.print("Local site created at ./" .. project_name)
+    output.print("Run: cd " .. project_name .. " && npm install && npm start")
+    output.print("")
 end
+
+return context
